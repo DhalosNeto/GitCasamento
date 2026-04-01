@@ -11,6 +11,8 @@ export const RsvpPage: React.FC = () => {
   const [currentFamily, setCurrentFamily] = useState<Family | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,20 +22,41 @@ export const RsvpPage: React.FC = () => {
           if (family) {
             setCurrentFamily(family);
           } else {
-            setError('Família não encontrada. Verifique o link.');
+            setError('Não encontramos seu convite com este link. Por favor, verifique se o link está correto.');
           }
         } catch (err) {
-          setError('Erro ao carregar dados. Tente novamente mais tarde.');
+          setError('Houve um erro ao carregar seus dados. Por favor, tente novamente mais tarde.');
         } finally {
           setLoading(false);
         }
       } else {
         setLoading(false);
-        setError('Link inválido.');
+        // We don't set an error here, just wait for manual entry
       }
     };
     fetchData();
   }, [id]);
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!accessCode.trim()) return;
+
+    setIsVerifying(true);
+    setError('');
+
+    try {
+      const family = await familyService.getByAccessCode(accessCode.trim());
+      if (family) {
+        setCurrentFamily(family);
+      } else {
+        setError('Código de acesso não encontrado. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      setError('Erro ao verificar código. Tente novamente mais tarde.');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const handleUpdateFamily = async (updatedFamily: Family) => {
     try {
@@ -53,13 +76,46 @@ export const RsvpPage: React.FC = () => {
     );
   }
 
-  if (error || !currentFamily) {
+  // If no ID and no family loaded yet, show a beautiful access code form
+  if (!currentFamily) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-wedding-bg p-4 text-center">
-        <h1 className="text-4xl font-serif text-wedding-primary mb-4">Ops!</h1>
-        <div className="h-0.5 bg-wedding-accent/40 w-12 mx-auto mb-8"></div>
-        <p className="text-stone-600 mb-8 max-w-sm">{error}</p>
-        <a href="/" className="text-xs tracking-widest uppercase font-bold text-wedding-secondary hover:text-wedding-primary border-b border-wedding-secondary/30 pb-1">Voltar para o início</a>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-wedding-bg p-4">
+        <div className="bg-white p-10 rounded-sm shadow-xl border-t-4 border-wedding-primary max-w-md w-full text-center animate-fadeIn">
+          <h1 className="text-3xl font-serif text-wedding-primary mb-2 uppercase tracking-wide">Bem-vindo!</h1>
+          <div className="h-0.5 bg-wedding-accent/20 w-12 mx-auto mb-8"></div>
+          
+          <p className="text-stone-600 mb-8 font-light italic leading-relaxed">
+            Por favor, utilize o código de acesso impresso em seu convite para confirmar seu nome.
+          </p>
+
+          <form onSubmit={handleVerifyCode} className="space-y-6">
+            <div className="group">
+              <label className="block text-[10px] tracking-[0.4em] uppercase text-stone-400 font-bold mb-3 text-left">Código de Acesso</label>
+              <input
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+                placeholder="Ex: ABC123"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm focus:outline-none focus:border-wedding-primary transition-all text-center font-serif text-xl tracking-widest uppercase"
+                maxLength={10}
+              />
+            </div>
+
+            {error && <p className="text-red-500 text-xs animate-shake">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={isVerifying || !accessCode.trim()}
+              className="w-full bg-wedding-primary text-white py-4 px-6 rounded-sm tracking-[0.3em] uppercase text-xs font-bold shadow-md hover:bg-wedding-secondary transition-all disabled:opacity-50"
+            >
+              {isVerifying ? 'Verificando...' : 'Encontrar meu Convite'}
+            </button>
+          </form>
+
+          <div className="mt-12 pt-8 border-t border-stone-100">
+            <a href="/" className="text-[10px] tracking-widest uppercase font-bold text-stone-400 hover:text-wedding-primary transition-colors">Voltar para o início</a>
+          </div>
+        </div>
       </div>
     );
   }

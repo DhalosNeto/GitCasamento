@@ -96,5 +96,11 @@ export const WEDDING_DETAILS = {
   date: "18 de Julho de 2026",
   time: "16:00",
   location: "Quinta do Vale, Sintra",
-  mapUrl: "https://maps.google.com"
+  mapUrl: "https://maps.google.com",
+  pix: {
+    key: "8bf666b0-ed7d-4daf-ba2c-efa89c2b26b4",
+    bank: "Nubank",
+    receiver: "Tiago Rodrigues Brito",
+    qrcodePath: "/assets/pix-qrcode.png" // Placeholder for the asset
+  }
 };

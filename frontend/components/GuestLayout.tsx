@@ -7,11 +7,11 @@ export const GuestLayout: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { label: 'HOME', path: `/convite/${id}/home` },
-    { label: 'CERIMÔNIA', path: `/convite/${id}/cerimonia` },
-    { label: 'RECEPÇÃO', path: `/convite/${id}/recepcao` },
-    { label: 'LISTA DE PRESENTES', path: `/convite/${id}/presentes` },
-    { label: 'CONFIRME SUA PRESENÇA', path: `/convite/${id}/rsvp` },
+    { label: 'HOME', path: id ? `/convite/${id}/home` : '/home' },
+    { label: 'CERIMÔNIA', path: id ? `/convite/${id}/cerimonia` : '/cerimonia' },
+    { label: 'RECEPÇÃO', path: id ? `/convite/${id}/recepcao` : '/recepcao' },
+    { label: 'LISTA DE PRESENTES', path: id ? `/convite/${id}/presentes` : '/presentes' },
+    { label: 'CONFIRME SUA PRESENÇA', path: id ? `/convite/${id}/rsvp` : '/rsvp' },
   ];
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -90,6 +90,11 @@ export const GuestLayout: React.FC = () => {
           <div className="h-px bg-stone-800 w-12 mx-auto mb-8"></div>
           <p className="text-xs italic font-serif">"O amor é a única coisa que cresce quando se reparte."</p>
           <p className="mt-8 text-[10px] tracking-widest uppercase opacity-50">© 2026 GitCasamento</p>
+          <div className="mt-4">
+            <a href="/admin" className="text-[10px] uppercase tracking-widest hover:text-white transition-colors">
+              Acesso Restrito
+            </a>
+          </div>
         </div>
       </footer>
     </div>

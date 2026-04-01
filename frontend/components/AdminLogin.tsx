@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
 import { Lock } from 'lucide-react';
+import { familyService } from '../services/familyService';
 
 interface AdminLoginProps {
   onLogin: () => void;
@@ -9,14 +10,24 @@ interface AdminLoginProps {
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Hardcoded password for "Noivos"
-    if (password === 'casamento2026') {
-      onLogin();
-    } else {
-      setError('Senha incorreta. Tente novamente.');
+    setLoading(true);
+    setError('');
+
+    try {
+      const success = await familyService.login(password);
+      if (success) {
+        onLogin();
+      } else {
+        setError('Senha incorreta. Tente novamente.');
+      }
+    } catch (err) {
+      setError('Erro ao conectar com o servidor.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,7 +49,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             />
           </div>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <Button type="submit" className="w-full">Entrar</Button>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
         </form>
       </div>
     </div>

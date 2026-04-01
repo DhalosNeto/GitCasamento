@@ -1,5 +1,5 @@
-import React from 'react';
 import { WEDDING_DETAILS } from '../constants';
+import { CountdownTimer } from './CountdownTimer';
 
 export const Home: React.FC = () => {
   return (
@@ -21,44 +21,6 @@ export const Home: React.FC = () => {
 
         {/* Content */}
         <div className="relative z-10 text-center text-white px-4 flex flex-col items-center">
-            {/* Monogram SVG */}
-            <div className="mb-8 animate-fadeIn">
-                <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-                    {/* Square Border */}
-                    <rect x="50" y="50" width="140" height="140" stroke="white" strokeWidth="1.5" />
-                    
-                    {/* D.T Typography */}
-                    <text 
-                        x="120" 
-                        y="135" 
-                        textAnchor="middle" 
-                        fill="white" 
-                        fontFamily="'Cormorant Garamond', serif" 
-                        fontSize="48" 
-                        fontWeight="300" 
-                        letterSpacing="0.1em"
-                    >
-                        D·T
-                    </text>
-
-                    {/* Botanical Illustration (Simplified Wheat/Lavender Branch) */}
-                    <path 
-                        d="M45 160 C 45 140, 55 100, 75 70 M 75 70 C 85 50, 95 40, 95 40" 
-                        stroke="white" 
-                        strokeWidth="1.5" 
-                        strokeLinecap="round" 
-                        fill="none"
-                    />
-                    <path d="M48 150 L 40 145" stroke="white" strokeWidth="1" />
-                    <path d="M52 140 L 44 135" stroke="white" strokeWidth="1" />
-                    <path d="M58 125 L 50 120" stroke="white" strokeWidth="1" />
-                    <path d="M65 110 L 57 105" stroke="white" strokeWidth="1" />
-                    <path d="M72 95 L 64 90" stroke="white" strokeWidth="1" />
-                    <path d="M80 80 L 72 75" stroke="white" strokeWidth="1" />
-                    <path d="M88 65 L 80 60" stroke="white" strokeWidth="1" />
-                </svg>
-            </div>
-
           {/* Names */}
           <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase mb-4 animate-slideUp">
             {WEDDING_DETAILS.coupleNames.replace('&', 'E')}
@@ -72,6 +34,8 @@ export const Home: React.FC = () => {
             <span className="w-px h-8 bg-white/50"></span>
             <span>2026</span>
           </div>
+
+          <CountdownTimer />
         </div>
 
         {/* Scroll Indicator */}

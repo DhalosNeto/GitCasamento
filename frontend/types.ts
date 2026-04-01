@@ -19,6 +19,7 @@ export interface GiftItem {
   price: number;
   category: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export enum AppView {
