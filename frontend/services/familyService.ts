@@ -3,7 +3,7 @@ import { MOCK_FAMILIES } from '../constants';
 
 const STORAGE_KEY = 'wedding_families_data';
 
-const API_URL = `http://${window.location.hostname}:3001/api`;
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001/api`;
 
 const getAdminHeaders = () => {
   const token = localStorage.getItem('wedding_admin_token');
@@ -37,6 +37,13 @@ export const familyService = {
     const response = await fetch(`${API_URL}/admin/families`, {
       headers: getAdminHeaders()
     });
+    
+    if (response.status === 401) {
+      localStorage.removeItem('isAdminAuthenticated');
+      localStorage.removeItem('wedding_admin_token');
+      throw new Error('Unauthorized');
+    }
+    
     if (!response.ok) throw new Error('Failed to fetch families');
     return response.json();
   },
@@ -86,5 +93,5 @@ export const familyService = {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   },
   getApiUrl: () => API_URL,
-  getBaseUrl: () => `http://${window.location.hostname}:3001`
+  getBaseUrl: () => import.meta.env.VITE_BASE_URL || `http://${window.location.hostname}:3001`
 };

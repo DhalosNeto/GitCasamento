@@ -23,6 +23,13 @@ export const giftService = {
       headers: getAdminHeaders(),
       body: JSON.stringify(gift),
     });
+    
+    if (response.status === 401) {
+      localStorage.removeItem('isAdminAuthenticated');
+      localStorage.removeItem('wedding_admin_token');
+      throw new Error('Unauthorized');
+    }
+    
     if (!response.ok) throw new Error('Failed to create gift');
     return response.json();
   },
@@ -32,6 +39,13 @@ export const giftService = {
       method: 'DELETE',
       headers: getAdminHeaders(),
     });
+    
+    if (response.status === 401) {
+      localStorage.removeItem('isAdminAuthenticated');
+      localStorage.removeItem('wedding_admin_token');
+      throw new Error('Unauthorized');
+    }
+    
     if (!response.ok) throw new Error('Failed to delete gift');
   },
 
@@ -41,6 +55,13 @@ export const giftService = {
       headers: getAdminHeaders(),
       body: JSON.stringify(gift),
     });
+    
+    if (response.status === 401) {
+      localStorage.removeItem('isAdminAuthenticated');
+      localStorage.removeItem('wedding_admin_token');
+      throw new Error('Unauthorized');
+    }
+    
     if (!response.ok) throw new Error('Failed to update gift');
   }
 };

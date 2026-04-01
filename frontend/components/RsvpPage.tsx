@@ -69,7 +69,7 @@ export const RsvpPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-wedding-bg">
+      <div className="min-h-screen pt-32 flex flex-col items-center bg-wedding-bg">
         <div className="w-16 h-16 border-4 border-wedding-accent border-t-wedding-primary rounded-full animate-spin mb-4"></div>
         <div className="font-serif text-wedding-primary tracking-widest uppercase text-sm">Carregando convite...</div>
       </div>
@@ -79,7 +79,7 @@ export const RsvpPage: React.FC = () => {
   // If no ID and no family loaded yet, show a beautiful access code form
   if (!currentFamily) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-wedding-bg p-4">
+      <div className="min-h-screen pt-32 pb-12 flex flex-col items-center bg-wedding-bg p-4 overflow-y-auto">
         <div className="bg-white p-10 rounded-sm shadow-xl border-t-4 border-wedding-primary max-w-md w-full text-center animate-fadeIn">
           <h1 className="text-3xl font-serif text-wedding-primary mb-2 uppercase tracking-wide">Bem-vindo!</h1>
           <div className="h-0.5 bg-wedding-accent/20 w-12 mx-auto mb-8"></div>
@@ -148,7 +148,7 @@ export const RsvpPage: React.FC = () => {
                         </div>
                         <p className="text-stone-600 font-light leading-relaxed">
                             <span className="font-medium text-stone-800">{WEDDING_DETAILS.date}</span><br />
-                            A partir das {WEDDING_DETAILS.time}h
+                            Às {WEDDING_DETAILS.ceremonyTime}
                         </p>
                     </div>
 
@@ -159,7 +159,7 @@ export const RsvpPage: React.FC = () => {
                         </div>
                         <p className="text-stone-600 font-light leading-relaxed">
                             <span className="font-medium text-stone-800">{WEDDING_DETAILS.location}</span><br />
-                            Estrada Velha de Sintra, 45
+                            Teixeira de Freitas, BA
                         </p>
                     </div>
                 </div>
@@ -175,7 +175,7 @@ export const RsvpPage: React.FC = () => {
                         "Ficaremos muito felizes em celebrar com vocês."
                     </p>
                     <div className="text-[10px] tracking-[0.4em] uppercase text-wedding-accent font-bold">
-                        Prazzo para confirmação: 18 de Junho de 2026
+                        Prazo para confirmação: 01 de Junho de 2026
                     </div>
                 </div>
             </div>

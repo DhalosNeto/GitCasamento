@@ -3,6 +3,7 @@ import { GiftItem } from '../types';
 import { WEDDING_DETAILS } from '../constants';
 import { X, Copy, Check, Lock, Gift, Image as ImageIcon } from 'lucide-react';
 import { familyService } from '../services/familyService';
+import { formatCurrency } from '../utils/formatters';
 
 interface GiftPixModalProps {
   gift: GiftItem | null;
@@ -18,13 +19,6 @@ export const GiftPixModal: React.FC<GiftPixModalProps> = ({ gift, onClose }) => 
     navigator.clipboard.writeText(WEDDING_DETAILS.pix.key);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
   };
 
   return (

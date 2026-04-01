@@ -22,7 +22,7 @@ export const Ceremony: React.FC = () => {
                     </div>
                     <div>
                         <div className="text-xs tracking-widest uppercase text-stone-400 mb-1">Data e Hora</div>
-                        <div className="font-serif text-xl text-stone-800">{WEDDING_DETAILS.date} às {WEDDING_DETAILS.time}</div>
+                        <div className="font-serif text-xl text-stone-800">{WEDDING_DETAILS.date} às {WEDDING_DETAILS.ceremonyTime}</div>
                     </div>
                 </div>
 
@@ -33,7 +33,7 @@ export const Ceremony: React.FC = () => {
                     <div>
                         <div className="text-xs tracking-widest uppercase text-stone-400 mb-1">Localização</div>
                         <div className="font-serif text-xl text-stone-800">{WEDDING_DETAILS.location}</div>
-                        <div className="text-sm text-stone-500 mt-1 uppercase tracking-wider">Estrada Velha de Sintra, 45, Sintra, Portugal</div>
+                        <div className="text-sm text-stone-500 mt-1 uppercase tracking-wider">{WEDDING_DETAILS.address}</div>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@ export const Ceremony: React.FC = () => {
 
         <div className="aspect-[3/4] rounded-sm overflow-hidden shadow-2xl animate-fadeIn delay-200">
             <img 
-                src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=1000" 
+                src="/VIT_1952.jpeg" 
                 alt="Igreja ou Local da Cerimônia" 
                 className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000 transform hover:scale-105"
             />

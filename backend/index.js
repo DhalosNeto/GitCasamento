@@ -73,17 +73,25 @@ const port = process.env.PORT || 3001;
 app.use(helmet({
   crossOriginResourcePolicy: false, // Permite carregar imagens do mesmo servidor
 }));
-app.use(cors());
+
+// Restricted CORS
+const frontendURL = process.env.FRONTEND_URL || '*';
+app.use(cors({
+  origin: frontendURL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Global Rate Limiter (Prevents DDoS and spam)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  max: 500, // Limit each IP to 500 requests per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many requests, please try again later.' }
+  message: { error: 'Ocorreram muitas requisições. Por favor, tente novamente em alguns minutos.' }
 });
 app.use('/api/', limiter);
 
@@ -158,17 +166,6 @@ app.post('/api/admin/login', (req, res) => {
   res.status(401).json({ error: 'Senha incorreta.' });
 });
 
-// TEMPORARY DEBUG ROUTE
-app.get('/api/debug/families', async (req, res) => {
-  try {
-    if (db) {
-       const snapshot = await db.collection('families').get();
-       res.json(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } else {
-       res.json(getLocalFamilies());
-    }
-  } catch (e) { res.json({ error: e.message }); }
-});
 
 // List all families (Admin only)
 app.get('/api/admin/families', authenticateAdmin, async (req, res) => {
@@ -233,12 +230,26 @@ app.delete('/api/admin/family/:id', authenticateAdmin, async (req, res) => {
 });
 
 // --- Admin Upload Endpoint ---
-app.post('/api/admin/upload', authenticateAdmin, upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
-  }
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.json({ imageUrl });
+app.post('/api/admin/upload', authenticateAdmin, (req, res, next) => {
+  console.log("Receiving upload request. Headers:", req.headers);
+  upload.single('image')(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      console.error("Multer error:", err);
+      return res.status(400).json({ error: `Erro no upload: ${err.message}` });
+    } else if (err) {
+      console.error("Unknown upload error:", err);
+      return res.status(500).json({ error: "Erro interno no servidor de upload" });
+    }
+
+    if (!req.file) {
+      console.log("No file received in request");
+      return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
+    console.log(`File uploaded successfully: ${imageUrl}`);
+    res.json({ imageUrl });
+  });
 });
 
 // --- Gift Management Endpoints (Admin) ---
@@ -270,6 +281,37 @@ app.post('/api/admin/gift', authenticateAdmin, async (req, res) => {
 app.delete('/api/admin/gift/:id', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
+    let giftToDelete = null;
+
+    // 1. Find the gift first to get the imageUrl
+    if (db) {
+      const doc = await db.collection('gifts').doc(id).get();
+      if (doc.exists) {
+        giftToDelete = { id: doc.id, ...doc.data() };
+      }
+    } else {
+      const gifts = getLocalGifts();
+      giftToDelete = gifts.find(g => g.id === id);
+    }
+
+    // 2. If gift has an image, delete the physical file
+    if (giftToDelete && giftToDelete.imageUrl) {
+      // The imageUrl is stored as "/uploads/filename.ext"
+      const fileName = giftToDelete.imageUrl.replace('/uploads/', '');
+      const filePath = path.join(UPLOADS_DIR, fileName);
+
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted file: ${filePath}`);
+        } catch (unlinkError) {
+          console.error(`Error deleting file ${filePath}:`, unlinkError);
+          // We continue anyway so the DB record is cleaned up
+        }
+      }
+    }
+
+    // 3. Delete from Database
     if (db) {
       await db.collection('gifts').doc(id).delete();
       res.json({ success: true });

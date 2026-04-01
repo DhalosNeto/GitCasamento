@@ -83,18 +83,22 @@ export const GuestLayout: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 bg-stone-900 text-stone-400 text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="font-serif text-3xl text-wedding-accent mb-4">Dinah & Tiago</div>
-          <p className="text-sm tracking-[0.1em] mb-8 uppercase">18 de Julho de 2026</p>
-          <div className="h-px bg-stone-800 w-12 mx-auto mb-8"></div>
-          <p className="text-xs italic font-serif">"O amor é a única coisa que cresce quando se reparte."</p>
-          <p className="mt-8 text-[10px] tracking-widest uppercase opacity-50">© 2026 GitCasamento</p>
-          <div className="mt-4">
-            <a href="/admin" className="text-[10px] uppercase tracking-widest hover:text-white transition-colors">
-              Acesso Restrito
-            </a>
+      <footer className="py-20 bg-stone-900 text-stone-400 text-center">
+        <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
+          {/* Logo */}
+          <div className="mb-8 opacity-90 transition-opacity hover:opacity-100">
+            <img src="/Logo-quadrada.png" alt="Logo" className="w-24 md:w-32 drop-shadow-xl" />
           </div>
+
+          <div className="font-serif text-3xl text-wedding-accent mb-4 tracking-wider uppercase">Dinah & Tiago</div>
+          <p className="text-sm tracking-[0.2em] mb-8 uppercase font-light">18 de Julho de 2026</p>
+          
+          <div className="h-px bg-stone-800 w-16 mx-auto mb-8"></div>
+          
+          <p className="text-sm italic font-serif max-w-xs leading-relaxed">
+            "O amor é a única coisa que cresce quando se reparte."
+          </p>
+
         </div>
       </footer>
     </div>
