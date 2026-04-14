@@ -4,10 +4,10 @@
     "private": true,
     "workspaces": [
         "frontend",
-        "backend"
+        "server"
     ],
     "scripts": {
-        "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+        "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w server\"",
         "install:all": "npm install"
     },
     "devDependencies": {

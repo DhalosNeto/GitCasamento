@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- Families / Guests ---
+    match /families/{familyId} {
+      // Allow reading individual family for RSVP (ID or code)
+      allow get: if true;
+      // Allow guests to update their own RSVP data
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['members', 'updatedAt', 'confirmed', 'presentsCount']);
+      
+      // Full access only for Admin (Authenticated via your custom backend)
+      // Note: Since auth is handled via your serverless API, we permit
+      // the server's service account to do everything.
+      // These rules are for client-side SDK access (which we don't use often, but for safety):
+      allow list, create, delete: if false; 
+    }
+
+    // --- Gifts ---
+    match /gifts/{giftId} {
+      // Anyone can see the gift list
+      allow read: if true;
+      // Only the Admin (via API) can manage gifts
+      allow write: if false;
+    }
+  }
+}
