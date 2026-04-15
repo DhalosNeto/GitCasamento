@@ -1,7 +1,4 @@
 import { Family, Guest } from '../types';
-import { MOCK_FAMILIES } from '../constants';
-
-const STORAGE_KEY = 'wedding_families_data';
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001/api`;
 
