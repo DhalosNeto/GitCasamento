@@ -1,6 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+import { familyService } from './familyService';
 
 export const generateWeddingMessage = async (
   relationship: string,
@@ -8,24 +6,20 @@ export const generateWeddingMessage = async (
   coupleNames: string
 ): Promise<string> => {
   try {
-    const prompt = `
-      Você é um assistente criativo de escrita para convidados de casamento.
-      Escreva uma mensagem curta, elegante e carinhosa para o livro de visitas dos noivos: ${coupleNames}.
-      
-      O convidado tem a seguinte relação com os noivos: "${relationship}".
-      O tom da mensagem deve ser: "${tone}".
-      
-      A mensagem deve ter no máximo 3 frases. Responda apenas com o texto da mensagem.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
+    const baseUrl = familyService.getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/generate-message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ relationship, tone, coupleNames })
     });
 
-    return response.text || "Felicidades ao casal!";
+    if (!response.ok) {
+       throw new Error('Falha na API: ' + response.statusText);
+    }
+    const data = await response.json();
+    return data.text || "Felicidades ao casal!";
   } catch (error) {
-    console.error("Erro ao gerar mensagem:", error);
+    console.error("Erro ao gerar mensagem via servidor:", error);
     return "Desejamos toda a felicidade do mundo nesta nova jornada!";
   }
 };

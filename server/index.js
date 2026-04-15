@@ -4,8 +4,10 @@ const cors = require("cors");
 const helmet = require("helmet");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
+const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv");
 const { createClient } = require("@supabase/supabase-js");
+const { GoogleGenAI } = require("@google/genai");
 
 dotenv.config();
 
@@ -46,9 +48,15 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Security Constants
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'casamento2026';
-const JWT_SECRET = process.env.JWT_SECRET || 'wedding-secret-ultra-secure-2026-dynamic';
+// Security Constants (Fail Securely)
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!ADMIN_PASSWORD || !JWT_SECRET) {
+  console.error("⚠️ ERRO CRÍTICO DE SEGURANÇA: Senha de Admin ou JWT_SECRET ausente!");
+  console.error("Por favor, configure as variáveis de ambiente antes de iniciar o servidor em produção.");
+  process.exit(1);
+}
 
 // --- Security Middleware ---
 app.use(helmet({
@@ -64,6 +72,14 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// --- Rate Limiting Profiles ---
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5, message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' } });
+const codeLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 15, message: { error: 'Muitas tentativas de código. Tente novamente em 1 hora.' } });
+const generalApiLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200, message: { error: 'Limite de requisições excedido.' } });
+const aiLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 20, message: { error: 'Limite de geração de mensagens atingido. Tente mais tarde.' } });
+
+app.use('/api/', generalApiLimiter);
 
 // --- Authentication Middleware ---
 const authenticateAdmin = (req, res, next) => {
@@ -82,15 +98,22 @@ const authenticateAdmin = (req, res, next) => {
   }
 };
 
-// --- Multer Configuration (Memory Storage for Supabase) ---
+// --- Multer Configuration (Memory Storage + Strict Image Filter) ---
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/webp') {
+      cb(null, true);
+    } else {
+      cb(new Error('Apenas arquivos de imagem (JPEG, PNG, WEBP) são permitidos.'));
+    }
+  }
 });
 
 // --- API Routes ---
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', loginLimiter, (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
     const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '2h' });
@@ -241,7 +264,7 @@ app.get('/api/family/:id', async (req, res) => {
   }
 });
 
-app.get('/api/family/code/:code', async (req, res) => {
+app.get('/api/family/code/:code', codeLimiter, async (req, res) => {
   try {
     const code = req.params.code.trim().toUpperCase();
     const snapshot = await db.collection('families').where('accessCode', '==', code).get();
@@ -255,13 +278,45 @@ app.get('/api/family/code/:code', async (req, res) => {
 
 app.put('/api/family/:id/rsvp', async (req, res) => {
   try {
+    const { members } = req.body;
+    
+    // Antidote against Mass Assignment: Only allow specific allowed fields to be written by the guest
+    if (!members) {
+      return res.status(400).json({ error: "Nenhum dado atualizável foi recebido." });
+    }
+
     await db.collection('families').doc(req.params.id).update({
-      ...req.body,
+      members: members, // STRICT assignment, not spread `...req.body`
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Backend proxy for Gemini AI to protect the API key
+const ai = process.env.API_KEY ? new GoogleGenAI({ apiKey: process.env.API_KEY }) : null;
+
+app.post('/api/generate-message', aiLimiter, async (req, res) => {
+  if (!ai) return res.status(503).json({ error: "AI desabilitada. API KEY não configurada no servidor." });
+  
+  try {
+    const { relationship, tone, coupleNames } = req.body;
+    const prompt = `Você é um assistente criativo de escrita para convidados de casamento.
+Escreva uma mensagem curta, elegante e carinhosa para o livro de visitas dos noivos: ${coupleNames}.
+O convidado tem a seguinte relação com os noivos: "${relationship}".
+O tom da mensagem deve ser: "${tone}".
+A mensagem deve ter no máximo 3 frases. Responda apenas com o texto da mensagem.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+    });
+    res.json({ text: response.text || "Felicidades ao casal!" });
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    res.status(500).json({ error: 'Erro ao gerar mensagem na IA.' });
   }
 });
 
