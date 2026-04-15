@@ -1,6 +1,6 @@
 import { Family, Guest } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001/api`;
+const API_URL = import.meta.env.VITE_API_URL || 'https://gitcasamento.onrender.com/api';
 
 const getAdminHeaders = () => {
   const token = localStorage.getItem('wedding_admin_token');
@@ -90,5 +90,5 @@ export const familyService = {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   },
   getApiUrl: () => API_URL,
-  getBaseUrl: () => import.meta.env.VITE_BASE_URL || `http://${window.location.hostname}:3001`
+  getBaseUrl: () => import.meta.env.VITE_BASE_URL || 'https://gitcasamento.onrender.com'
 };

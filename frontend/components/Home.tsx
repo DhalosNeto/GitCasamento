@@ -67,8 +67,8 @@ export const Home: React.FC = () => {
                     <div className="text-xs tracking-widest uppercase text-stone-400">Julho de 2026</div>
                 </div>
                 <div className="p-8 border border-wedding-accent/20 rounded-sm hover:border-wedding-accent transition-colors duration-500">
-                    <div className="text-wedding-primary mb-4 font-serif text-3xl lowercase first-letter:uppercase">{WEDDING_DETAILS.receptionTime}</div>
-                    <div className="text-xs tracking-widest uppercase text-stone-400">A Recepção</div>
+                    <div className="text-wedding-primary mb-2 font-serif text-3xl">Cerimônia</div>
+                    <div className="text-xs tracking-widest uppercase text-stone-400">Paróquia São Pedro - Teixeira De Freitas - BA</div>
                 </div>
                 <div className="p-8 border border-wedding-accent/20 rounded-sm hover:border-wedding-accent transition-colors duration-500">
                     <div className="text-wedding-primary mb-4 font-serif text-3xl">Recepção</div>

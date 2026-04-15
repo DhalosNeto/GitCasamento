@@ -45,7 +45,7 @@ export const GiftPixModal: React.FC<GiftPixModalProps> = ({ gift, onClose }) => 
           <div className="text-center mb-6">
             <div className="inline-flex w-24 h-24 bg-wedding-bg rounded-lg overflow-hidden mb-4 ring-1 ring-wedding-accent/20 items-center justify-center text-wedding-primary shadow-inner">
                 {gift.imageUrl ? 
-                    <img src={`${familyService.getBaseUrl()}${gift.imageUrl}`} alt={gift.name} className="w-full h-full object-cover" /> 
+                    <img src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`} alt={gift.name} className="w-full h-full object-cover" /> 
                     : <Gift size={40} />
                 }
             </div>

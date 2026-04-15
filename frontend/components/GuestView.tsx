@@ -142,7 +142,7 @@ export const GuestView: React.FC = () => {
               </div>
 
               <a
-                href={WEDDING_DETAILS.mapUrl}
+                href={WEDDING_DETAILS.ceremonyMapUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="block w-full py-3 bg-wedding-secondary text-white rounded-sm hover:bg-wedding-primary transition-colors font-sans tracking-wide shadow-md text-center"

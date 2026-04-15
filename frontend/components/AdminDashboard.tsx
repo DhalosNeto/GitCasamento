@@ -4,7 +4,7 @@ import { Family, Guest, GiftItem } from '../types';
 import { familyService } from '../services/familyService';
 import { giftService } from '../services/giftService';
 import { Button } from './Button';
-import { Plus, Trash2, Edit2, Link as LinkIcon, Users, Check, X, Gift, ChevronDown, ChevronUp, Image as ImageIcon, LogOut } from 'lucide-react';
+import { Plus, Trash2, Edit2, Link as LinkIcon, Users, Check, X, Gift, ChevronDown, ChevronUp, Image as ImageIcon, LogOut, UserCheck, UserX, Clock } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -268,6 +268,47 @@ export const AdminDashboard: React.FC = () => {
 
         {activeTab === 'families' ? (
           <div className="animate-fadeIn">
+            {/* RSVP Stats */}
+            {(() => {
+              const allGuests = families.flatMap(f => f.members);
+              const confirmed = allGuests.filter(g => g.isAttending === true).length;
+              const declined = allGuests.filter(g => g.isAttending === false).length;
+              const pending = allGuests.filter(g => g.isAttending === null || g.isAttending === undefined).length;
+              const total = allGuests.length;
+              return (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-white border border-stone-200 rounded-sm p-5 flex items-center gap-4 shadow-sm">
+                    <div className="p-3 bg-green-50 rounded-sm text-green-600"><UserCheck size={22} /></div>
+                    <div>
+                      <div className="text-2xl font-serif text-green-600 font-bold">{confirmed}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Confirmados</div>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-stone-200 rounded-sm p-5 flex items-center gap-4 shadow-sm">
+                    <div className="p-3 bg-red-50 rounded-sm text-red-500"><UserX size={22} /></div>
+                    <div>
+                      <div className="text-2xl font-serif text-red-500 font-bold">{declined}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Não Irão</div>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-stone-200 rounded-sm p-5 flex items-center gap-4 shadow-sm">
+                    <div className="p-3 bg-amber-50 rounded-sm text-amber-500"><Clock size={22} /></div>
+                    <div>
+                      <div className="text-2xl font-serif text-amber-500 font-bold">{pending}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Pendentes</div>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-stone-200 rounded-sm p-5 flex items-center gap-4 shadow-sm">
+                    <div className="p-3 bg-stone-100 rounded-sm text-stone-500"><Users size={22} /></div>
+                    <div>
+                      <div className="text-2xl font-serif text-stone-700 font-bold">{total}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Total</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-serif text-stone-700">Famílias e Convidados ({families.length})</h2>
               <Button onClick={() => handleOpenFamilyModal()} className="flex items-center gap-2">
@@ -320,9 +361,26 @@ export const AdminDashboard: React.FC = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-right space-x-3">
                               <button onClick={() => {
                                   const link = `${window.location.origin}/convite/${family.id}`;
-                                  navigator.clipboard.writeText(link);
-                                  alert('Link copiado!');
-                              }} className="text-stone-400 hover:text-blue-500 transition-colors" title="Copiar Link"><LinkIcon size={18} /></button>
+                                  const hostname = window.location.host;
+                                  const message = `Olá! É com alegria que convidamos você para celebrar nosso amor e o início de uma nova jornada. Sua presença tornará esse dia ainda mais especial! ❤️
+
+Cerimônia
+- 18/07/26 às 19h
+- Paróquia São Pedro - Teixeira de Freitas - BA
+
+Recepção
+- Após a cerimônia
+- Sítio Paraíso - Teixeira de Freitas - BA
+
+Para nos ajudar na organização, pedimos a gentileza de confirmar sua presença através do link abaixo até o dia 10/06: 
+🔗 ${link}
+
+Para mais informações é só acessar o site ${hostname} que preparamos com amor para vocês!
+
+Com carinho, Dinah e Tiago.`;
+                                  navigator.clipboard.writeText(message);
+                                  alert('Mensagem copiada!');
+                              }} className="text-stone-400 hover:text-blue-500 transition-colors" title="Copiar Mensagem"><LinkIcon size={18} /></button>
                               <button onClick={() => handleOpenFamilyModal(family)} className="text-stone-400 hover:text-indigo-500 transition-colors" title="Editar"><Edit2 size={18} /></button>
                               <button onClick={() => handleDeleteFamily(family.id)} className="text-stone-400 hover:text-red-500 transition-colors" title="Excluir"><Trash2 size={18} /></button>
                             </td>
@@ -358,35 +416,36 @@ export const AdminDashboard: React.FC = () => {
               </Button>
             </div>
 
-            {gifts.length === 0 ? (
+                        {gifts.length === 0 ? (
               <div className="py-20 text-center bg-white border border-stone-200 rounded-sm italic text-stone-400">Nenhum presente na lista ainda.</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {gifts.map((gift) => (
-                  <div key={gift.id} className="bg-white p-6 rounded-sm border border-stone-200 shadow-sm flex flex-col justify-between group h-full">
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                          <div className="w-12 h-12 bg-stone-50 rounded-lg overflow-hidden flex items-center justify-center text-stone-300 group-hover:text-wedding-primary transition-colors border border-stone-100">
-                              {gift.imageUrl ? <img src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`} className="w-full h-full object-cover" /> : <Gift size={24} />}
-                          </div>
-                          <div className="flex gap-2">
-                              <button onClick={() => handleOpenGiftModal(gift)} className="text-stone-300 hover:text-indigo-500 transition-colors">
-                                  <Edit2 size={16} />
-                              </button>
-                              <button onClick={() => handleDeleteGift(gift.id)} className="text-stone-300 hover:text-red-500 transition-colors">
-                                  <Trash2 size={16} />
-                              </button>
-                          </div>
-                      </div>
-                      <h3 className="font-serif text-lg text-stone-800 mb-1">{gift.name}</h3>
-                      <p className="text-xs text-stone-400 mb-2">{gift.category}</p>
-                      <p className="text-xs text-stone-500 line-clamp-2 italic font-light">{gift.description || 'Sem descrição'}</p>
+              <div className="bg-white rounded-sm border border-stone-200 shadow-sm overflow-hidden">
+                {gifts.map((gift, index) => (
+                  <div key={gift.id} className={`flex items-center gap-4 p-4 hover:bg-stone-50 transition-colors group ${index !== gifts.length - 1 ? 'border-b border-stone-100' : ''}`}>
+                    <div className="w-12 h-12 bg-stone-50 rounded-sm overflow-hidden flex-shrink-0 border border-stone-100">
+                      {gift.imageUrl
+                        ? <img src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`} className="w-full h-full object-cover" />
+                        : <div className="w-full h-full flex items-center justify-center text-stone-200"><Gift size={20} /></div>
+                      }
                     </div>
-                    <div className="mt-4 pt-4 border-t border-stone-50 flex justify-between items-center">
-                      <span className="text-xs text-stone-400 uppercase tracking-widest font-bold">Valor</span>
-                      <span className="font-serif text-xl text-wedding-primary">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.price)}
-                      </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-serif text-sm text-stone-800">{gift.name}</span>
+                        <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-wedding-secondary bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200">{gift.category}</span>
+                        {(gift.isPhysical || gift.price === 0) && (
+                          <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Físico</span>
+                        )}
+                      </div>
+                      {gift.description && (
+                        <p className="text-xs text-stone-400 font-light mt-0.5 line-clamp-1">{gift.description}</p>
+                      )}
+                    </div>
+                    <span className="font-serif text-base text-wedding-primary flex-shrink-0 hidden sm:block">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.price)}
+                    </span>
+                    <div className="flex gap-3 flex-shrink-0">
+                      <button onClick={() => handleOpenGiftModal(gift)} className="text-stone-300 hover:text-indigo-500 transition-colors" title="Editar"><Edit2 size={16} /></button>
+                      <button onClick={() => handleDeleteGift(gift.id)} className="text-stone-300 hover:text-red-500 transition-colors" title="Excluir"><Trash2 size={16} /></button>
                     </div>
                   </div>
                 ))}
@@ -396,7 +455,7 @@ export const AdminDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Family Modal */}
+            {/* Family Modal */}
       {isFamilyModalOpen && (
         <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
           <div className="bg-white rounded-sm shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-scaleIn">
@@ -536,3 +595,4 @@ export const AdminDashboard: React.FC = () => {
     </div>
   );
 };
+

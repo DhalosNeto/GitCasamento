@@ -128,8 +128,8 @@ export const RsvpPage: React.FC = () => {
         <p className="font-serif italic text-stone-500 text-lg">"Sua presença tornará nosso dia ainda mais especial."</p>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 mt-16 pb-20">
-        <div className="bg-white p-8 md:p-12 rounded-sm shadow-xl border-t-8 border-wedding-primary animate-fadeIn overflow-hidden relative">
+      <main className="max-w-4xl mx-auto px-2 md:px-4 mt-6 md:mt-16 pb-20">
+        <div className="bg-white p-5 md:p-12 rounded-sm shadow-xl border-t-8 border-wedding-primary animate-fadeIn overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-5">
                 <CheckCircle2 size={120} />
             </div>
@@ -140,8 +140,8 @@ export const RsvpPage: React.FC = () => {
                     <h2 className="font-serif text-3xl md:text-5xl text-stone-800">{currentFamily.name}</h2>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-12 mb-16">
-                    <div className="p-8 bg-wedding-bg rounded-sm border border-stone-100">
+                <div className="grid md:grid-cols-2 gap-6 md:gap-12 mb-10 md:mb-16">
+                    <div className="p-5 md:p-8 bg-wedding-bg rounded-sm border border-stone-100">
                         <div className="flex items-center gap-4 text-wedding-primary mb-4">
                             <Calendar size={24} />
                             <span className="font-serif text-xl tracking-wide uppercase">Quando</span>
@@ -152,7 +152,7 @@ export const RsvpPage: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="p-8 bg-wedding-bg rounded-sm border border-stone-100">
+                    <div className="p-5 md:p-8 bg-wedding-bg rounded-sm border border-stone-100">
                         <div className="flex items-center gap-4 text-wedding-primary mb-4">
                             <MapPin size={24} />
                             <span className="font-serif text-xl tracking-wide uppercase">Onde</span>

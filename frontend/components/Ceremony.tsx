@@ -38,7 +38,7 @@ export const Ceremony: React.FC = () => {
                 </div>
 
                 <a 
-                    href={WEDDING_DETAILS.mapUrl} 
+                    href={WEDDING_DETAILS.ceremonyMapUrl} 
                     target="_blank" 
                     rel="noreferrer" 
                     className="block w-full py-4 border border-wedding-secondary text-wedding-secondary hover:bg-wedding-secondary hover:text-white transition-all duration-300 text-center tracking-[0.2em] font-medium"

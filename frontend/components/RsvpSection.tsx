@@ -45,7 +45,7 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ family, onUpdateFamily
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <span className="font-serif text-xl text-stone-800">{member.name}</span>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto mt-4 md:mt-0">
                 <button
                   onClick={() => handleAttendanceChange(member.id, true)}
                   className={`flex-1 md:flex-none px-4 py-2 rounded-sm border transition-colors flex items-center justify-center gap-2 ${member.isAttending === true
