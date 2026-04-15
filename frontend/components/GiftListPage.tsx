@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GiftItem } from '../types';
 import { giftService } from '../services/giftService';
-import { Gift, CreditCard, Copy, Check, Heart, Info, Landmark, HelpCircle, X } from 'lucide-react';
+import { Gift, CreditCard, Copy, Check, Package, Landmark } from 'lucide-react';
 import { WEDDING_DETAILS } from '../constants';
 import { familyService } from '../services/familyService';
 import { formatCurrency } from '../utils/formatters';
@@ -28,16 +28,14 @@ export const GiftListPage: React.FC = () => {
     }
   };
 
-  const handleGiftSelect = (gift: GiftItem) => {
-    setSelectedGift(gift);
-  };
-
   const copyPixKey = () => {
     navigator.clipboard.writeText(WEDDING_DETAILS.pix.key);
     setCopiedKey(true);
     setTimeout(() => setCopiedKey(false), 2000);
   };
 
+  const digitalGifts = gifts.filter(g => !g.isPhysical);
+  const physicalGifts = gifts.filter(g => g.isPhysical);
 
   if (loading) {
     return (
@@ -57,64 +55,54 @@ export const GiftListPage: React.FC = () => {
         </p>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 mt-16">
-        {gifts.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-sm border border-stone-100 italic text-stone-400">
+      {/* --- Digital Gifts (PIX) Section --- */}
+      <main className="max-w-4xl mx-auto px-4 mt-16">
+        {digitalGifts.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-sm border border-stone-100 italic text-stone-400">
             A lista de presentes está sendo preparada pelos noivos. Volte em breve!
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {gifts.map((gift) => (
+          <div className="bg-white rounded-sm border border-stone-100 shadow-sm overflow-hidden">
+            {digitalGifts.map((gift, index) => (
               <div
                 key={gift.id}
-                className="bg-white rounded-sm border border-stone-100 shadow-sm hover:shadow-md transition-all flex flex-col group overflow-hidden"
+                className={`flex items-center gap-4 p-5 hover:bg-stone-50 transition-colors group ${index !== digitalGifts.length - 1 ? 'border-b border-stone-100' : ''}`}
               >
-                <div>
-                  {/* Large Image Header */}
-                  <div className="relative aspect-square w-full bg-stone-50 border-b border-stone-100 overflow-hidden group-hover:bg-stone-100 transition-all duration-500">
-                    {gift.imageUrl ? (
-                      <img 
-                        src={`${familyService.getBaseUrl()}${gift.imageUrl}`} 
-                        alt={gift.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-stone-200">
-                        <Gift size={64} strokeWidth={1} />
-                      </div>
-                    )}
-                    
-                    {/* Floating Category Tag */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-wedding-secondary bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full ring-1 ring-stone-200 shadow-sm">
-                        {gift.category}
-                      </span>
+                {/* Thumbnail */}
+                <div className="w-14 h-14 bg-stone-50 rounded-sm overflow-hidden flex-shrink-0 border border-stone-100">
+                  {gift.imageUrl ? (
+                    <img
+                      src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`}
+                      alt={gift.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-stone-200">
+                      <Gift size={24} strokeWidth={1} />
                     </div>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="font-serif text-xl text-stone-800 mb-1 group-hover:text-wedding-primary transition-colors">{gift.name}</h3>
-                    <p className="text-stone-500 text-sm mb-1 leading-relaxed font-light line-clamp-2">
-                      {gift.description}
-                    </p>
-                  </div>
+                  )}
                 </div>
 
-                <div className="p-6 pt-0">
-                  <div className="pt-2 border-t border-stone-50">
-                    <div className="flex justify-between items-center mb-6">
-                      <span className="text-stone-400 text-[10px] uppercase tracking-widest font-bold">Valor</span>
-                      <span className="font-serif text-2xl text-wedding-primary">
-                        {formatCurrency(gift.price)}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleGiftSelect(gift)}
-                      className="w-full py-4 bg-wedding-primary text-white text-xs tracking-[0.2em] font-bold uppercase shadow-lg shadow-wedding-primary/20 hover:bg-wedding-secondary transition-all duration-300 flex items-center justify-center gap-3 active:scale-95"
-                    >
-                      <CreditCard size={16} /> Presentear via PIX
-                    </button>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-serif text-base text-stone-800 group-hover:text-wedding-primary transition-colors">{gift.name}</h3>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-wedding-secondary bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200">{gift.category}</span>
                   </div>
+                  {gift.description && (
+                    <p className="text-xs text-stone-400 font-light mt-0.5 line-clamp-1">{gift.description}</p>
+                  )}
+                </div>
+
+                {/* Price + CTA */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <span className="font-serif text-lg text-wedding-primary hidden sm:block">{formatCurrency(gift.price)}</span>
+                  <button
+                    onClick={() => setSelectedGift(gift)}
+                    className="py-2 px-4 bg-wedding-primary text-white text-[10px] tracking-[0.15em] font-bold uppercase rounded-sm hover:bg-wedding-secondary transition-all duration-300 flex items-center gap-2 active:scale-95 whitespace-nowrap"
+                  >
+                    <CreditCard size={13} /> PIX
+                  </button>
                 </div>
               </div>
             ))}
@@ -122,6 +110,63 @@ export const GiftListPage: React.FC = () => {
         )}
       </main>
 
+      {/* --- Physical Gifts Section --- */}
+      {physicalGifts.length > 0 && (
+        <section className="max-w-4xl mx-auto px-4 mt-16">
+          <div className="text-center mb-10">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Package className="text-wedding-accent" size={28} strokeWidth={1.5} />
+              <h2 className="font-serif text-3xl text-wedding-primary uppercase tracking-widest">Presentes Físicos</h2>
+            </div>
+            <div className="h-0.5 bg-wedding-accent/40 w-16 mx-auto mb-6"></div>
+            <p className="font-serif italic text-stone-500 max-w-xl mx-auto">
+              "Caso queira levar algum presente pessoalmente, aqui você encontrará algumas coisas que os noivos amarão receber."
+            </p>
+          </div>
+
+          <div className="bg-white rounded-sm border border-stone-100 shadow-sm overflow-hidden">
+            {physicalGifts.map((gift, index) => (
+              <div
+                key={gift.id}
+                className={`flex items-center gap-4 p-5 hover:bg-stone-50 transition-colors group ${index !== physicalGifts.length - 1 ? 'border-b border-stone-100' : ''}`}
+              >
+                {/* Thumbnail */}
+                <div className="w-14 h-14 bg-stone-50 rounded-sm overflow-hidden flex-shrink-0 border border-stone-100">
+                  {gift.imageUrl ? (
+                    <img
+                      src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`}
+                      alt={gift.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-stone-200">
+                      <Package size={24} strokeWidth={1} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-serif text-base text-stone-800 group-hover:text-wedding-primary transition-colors">{gift.name}</h3>
+                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-wedding-secondary bg-stone-50 px-2 py-0.5 rounded-full border border-stone-200">{gift.category}</span>
+                  </div>
+                  {gift.description && (
+                    <p className="text-xs text-stone-400 font-light mt-0.5 line-clamp-1">{gift.description}</p>
+                  )}
+                </div>
+
+                {/* Price */}
+                <div className="flex-shrink-0">
+                  <span className="font-serif text-lg text-wedding-primary">{formatCurrency(gift.price)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* --- PIX Section --- */}
       <section id="pix-section" className="bg-wedding-primary/5 mt-24 py-20 px-4">
         <div className="max-w-4xl mx-auto bg-white p-8 md:p-16 rounded-sm shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-wedding-primary/5 rounded-bl-full -mr-16 -mt-16"></div>
@@ -130,17 +175,16 @@ export const GiftListPage: React.FC = () => {
                     <h3 className="font-serif text-3xl text-wedding-primary mb-4 uppercase tracking-widest">Presentear via PIX</h3>
                     <div className="h-0.5 bg-wedding-accent/40 w-12 mx-auto mb-6"></div>
                     <p className="text-stone-600 font-light leading-relaxed max-w-lg mx-auto italic">
-                        "Para facilitar, você pode realizar sua contribuição através do PIX. 
-                        Agradecemos de coração por todo o carinho e apoio."
+                        "Caso se sinta tocado e queira mandar outro valor que não esteja listado acima, o pix abaixo vai te ajudar. Obrigado por todo o carinho."
                     </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-16 items-center">
                     <div className="flex flex-col items-center">
                         <div className="bg-white p-4 rounded-sm mb-4">
-                            <img 
+                            <img
                                 src={WEDDING_DETAILS.pix.qrcodePath}
-                                alt="PIX QR Code" 
+                                alt="PIX QR Code"
                                 className="w-36 h-36 object-contain"
                             />
                         </div>
@@ -170,7 +214,7 @@ export const GiftListPage: React.FC = () => {
 
                         <div>
                             <span className="text-[9px] uppercase tracking-widest text-stone-400 font-bold block mb-2">Chave Aleatória</span>
-                            <div 
+                            <div
                                 onClick={copyPixKey}
                                 className="flex items-center justify-between p-4 bg-wedding-bg/30 border border-wedding-accent/20 rounded-sm cursor-pointer hover:border-wedding-primary transition-all group overflow-hidden relative"
                             >

@@ -43,8 +43,8 @@ export const Reception: React.FC = () => {
                     </div>
                     <div>
                         <div className="text-[10px] tracking-[0.3em] uppercase text-stone-400 mb-1 font-bold">Localização</div>
-                        <div className="font-serif text-xl text-stone-800">{WEDDING_DETAILS.receptionLocation.split(' - ')[0]}</div>
-                        <div className="text-sm text-stone-500 mt-1">Teixeira de Freitas, BA</div>
+                        <div className="font-serif text-xl text-stone-800">Sítio Paraíso</div>
+                        <div className="text-sm text-stone-500 mt-1">Av. Maria Miranda - Teixeira de Freitas, BA</div>
                     </div>
                 </div>
 

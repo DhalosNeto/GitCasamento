@@ -150,17 +150,8 @@ export const AdminDashboard: React.FC = () => {
         price: gift.price,
         category: gift.category,
         description: gift.description || '',
-        imageUrl: gift.imageUrl || ''
-      });
-      setPriceInput(formatPrice(gift.price));
-    } else {
-      setEditingGift(null);
-      setGiftFormData({
-        name: '',
-        price: 0,
-        category: 'Cozinha',
-        description: '',
-        imageUrl: ''
+        imageUrl: gift.imageUrl || '',
+        isPhysical: gift.isPhysical || false
       });
       setPriceInput(formatPrice(0));
     }
@@ -376,7 +367,7 @@ export const AdminDashboard: React.FC = () => {
                     <div>
                       <div className="flex justify-between items-start mb-4">
                           <div className="w-12 h-12 bg-stone-50 rounded-lg overflow-hidden flex items-center justify-center text-stone-300 group-hover:text-wedding-primary transition-colors border border-stone-100">
-                              {gift.imageUrl ? <img src={`${familyService.getBaseUrl()}${gift.imageUrl}`} className="w-full h-full object-cover" /> : <Gift size={24} />}
+                              {gift.imageUrl ? <img src={gift.imageUrl.startsWith('http') ? gift.imageUrl : `${familyService.getBaseUrl()}${gift.imageUrl}`} className="w-full h-full object-cover" /> : <Gift size={24} />}
                           </div>
                           <div className="flex gap-2">
                               <button onClick={() => handleOpenGiftModal(gift)} className="text-stone-300 hover:text-indigo-500 transition-colors">
@@ -474,7 +465,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-4 border border-stone-100 p-4 rounded-sm bg-stone-50/50">
                         <div className="w-20 h-20 bg-white rounded-sm border border-stone-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                             {giftFormData.imageUrl ? (
-                                <img src={`${familyService.getBaseUrl()}${giftFormData.imageUrl}`} alt="Preview" className="w-full h-full object-cover" />
+                                <img src={giftFormData.imageUrl.startsWith('http') ? giftFormData.imageUrl : `${familyService.getBaseUrl()}${giftFormData.imageUrl}`} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
                                 <ImageIcon size={32} className="text-stone-200" />
                             )}
@@ -524,6 +515,15 @@ export const AdminDashboard: React.FC = () => {
                     className="w-full p-3 border border-stone-200 rounded-sm focus:border-wedding-primary outline-none bg-white min-h-[100px]"
                     placeholder="Ex: Jogo de panelas Tramontina antiaderente"
                     ></textarea>
+                 </div>
+                 <div className="flex items-center gap-3 p-4 border border-stone-100 rounded-sm bg-stone-50/50 cursor-pointer" onClick={() => setGiftFormData({...giftFormData, isPhysical: !giftFormData.isPhysical})}>
+                    <div className={`w-10 h-6 rounded-full transition-colors duration-200 flex items-center px-1 flex-shrink-0 ${giftFormData.isPhysical ? 'bg-wedding-primary' : 'bg-stone-200'}`}>
+                      <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${giftFormData.isPhysical ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Presente Físico</div>
+                      <div className="text-xs text-stone-500 font-light">Aparece na seção de presentes para levar pessoalmente</div>
+                    </div>
                  </div>
                  <div className="pt-4 flex gap-4">
                    <Button variant="secondary" className="flex-1" onClick={() => setIsGiftModalOpen(false)}>Cancelar</Button>

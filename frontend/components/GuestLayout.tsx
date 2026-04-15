@@ -87,7 +87,7 @@ export const GuestLayout: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 flex flex-col items-center">
           {/* Logo */}
           <div className="mb-8 opacity-90 transition-opacity hover:opacity-100">
-            <img src="/Logo-quadrada.png" alt="Logo" className="w-24 md:w-32 drop-shadow-xl" />
+            <img src="/logo.png" alt="Logo" className="w-24 md:w-32 drop-shadow-xl" />
           </div>
 
           <div className="font-serif text-3xl text-wedding-accent mb-4 tracking-wider uppercase">Dinah & Tiago</div>
@@ -95,8 +95,11 @@ export const GuestLayout: React.FC = () => {
           
           <div className="h-px bg-stone-800 w-16 mx-auto mb-8"></div>
           
-          <p className="text-sm italic font-serif max-w-xs leading-relaxed">
-            "O amor é a única coisa que cresce quando se reparte."
+          <p className="text-sm font-serif max-w-sm mx-auto leading-relaxed mb-4">
+            "Assim, permanece agora estes três: a fé, a esperança e o amor. O maior deles, porém, é o amor."
+          </p>
+          <p className="text-[10px] tracking-[0.2em] uppercase font-bold text-wedding-accent">
+            1 Coríntios 13:13
           </p>
 
         </div>

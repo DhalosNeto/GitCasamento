@@ -20,6 +20,7 @@ export interface GiftItem {
   category: string;
   description?: string;
   imageUrl?: string;
+  isPhysical?: boolean; // true = presente físico para levar pessoalmente
 }
 
 export enum AppView {

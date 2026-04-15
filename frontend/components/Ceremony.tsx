@@ -32,8 +32,8 @@ export const Ceremony: React.FC = () => {
                     </div>
                     <div>
                         <div className="text-xs tracking-widest uppercase text-stone-400 mb-1">Localização</div>
-                        <div className="font-serif text-xl text-stone-800">{WEDDING_DETAILS.location}</div>
-                        <div className="text-sm text-stone-500 mt-1 uppercase tracking-wider">{WEDDING_DETAILS.address}</div>
+                        <div className="font-serif text-xl text-stone-800">Paróquia São Pedro</div>
+                        <div className="text-sm text-stone-500 mt-1">{WEDDING_DETAILS.address}</div>
                     </div>
                 </div>
 
