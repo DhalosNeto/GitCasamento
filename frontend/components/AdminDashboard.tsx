@@ -118,7 +118,7 @@ export const AdminDashboard: React.FC = () => {
 
     try {
       if (editingFamily) {
-        await familyService.update(editingFamily.id, familyFormData);
+        await familyService.updateAdmin(editingFamily.id, familyFormData);
       } else {
         await familyService.create(familyFormData as Omit<Family, 'id'>);
       }

@@ -145,6 +145,18 @@ app.post('/api/admin/family', authenticateAdmin, async (req, res) => {
   }
 });
 
+app.put('/api/admin/family/:id', authenticateAdmin, async (req, res) => {
+  try {
+    await db.collection('families').doc(req.params.id).update({
+      ...req.body,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.delete('/api/admin/family/:id', authenticateAdmin, async (req, res) => {
   try {
     await db.collection('families').doc(req.params.id).delete();

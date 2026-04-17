@@ -78,6 +78,15 @@ export const familyService = {
     if (!response.ok) throw new Error('Failed to update family');
   },
 
+  updateAdmin: async (id: string, updates: Partial<Family>): Promise<void> => {
+    const response = await fetch(`${API_URL}/admin/family/${id}`, {
+      method: 'PUT',
+      headers: getAdminHeaders(),
+      body: JSON.stringify(updates),
+    });
+    if (!response.ok) throw new Error('Failed to update family as admin');
+  },
+
   delete: async (id: string): Promise<void> => {
     const response = await fetch(`${API_URL}/admin/family/${id}`, {
       method: 'DELETE',
